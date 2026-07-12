@@ -11,7 +11,7 @@ app = Flask(__name__, static_folder="static", template_folder="static")
 # Import
 from database import (
     init_db, create_student, get_student, get_random_question,
-    upsert_kc_state, get_all_kc_states, seed_ontology
+    upsert_kc_state, get_all_kc_states, seed_ontology, get_conn
 )
 from seed_questions import seed
 
