@@ -47,6 +47,16 @@ def register():
         upsert_kc_state(sid, kc_id, 0.3, 0, 0, False)
 
     return jsonify({"student_id": sid, "name": name})
+    
+@app.get("/api/topics/<sid>")
+def get_topics(sid):
+    """Simple topics untuk BKT-Only"""
+    topics = [
+        {"id": "bilangan", "label": "Bilangan", "n_mastered": 0, "n_total": 10, "completed": False, "locked": False},
+        {"id": "operasi", "label": "Operasi Bilangan", "n_mastered": 0, "n_total": 8, "completed": False, "locked": True},
+        {"id": "geometri", "label": "Geometri", "n_mastered": 0, "n_total": 6, "completed": False, "locked": True},
+    ]
+    return jsonify(topics)
 
 @app.get("/api/next-question/<sid>")
 def next_question(sid):
