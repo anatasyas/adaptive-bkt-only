@@ -60,25 +60,27 @@ def get_topics(sid):
 @app.get("/api/next-question/<sid>")
 def next_question(sid):
     try:
-        topic = request.args.get("topic")
-        # Ambil soal random (BKT Only)
-        q = get_random_question(None)  # None = semua KC
+        # Ambil soal random dari semua KC (BKT Only)
+        q = get_random_question(None)   # None = semua KC
         
         if not q:
+            # Fallback soal
             q = {
                 "id": 999,
                 "kc_id": "KC-B01",
                 "type": "pilgan",
-                "q": "Berapa hasil 2 + 3?",
+                "q": "Berapa hasil dari 2 + 3?",
                 "options": ["4", "5", "6", "7"],
                 "answer": "5"
             }
+        
         return jsonify(q)
     except Exception as e:
         import traceback
-        print("ERROR next_question:", str(e))
+        print("=== NEXT QUESTION ERROR ===")
+        print(str(e))
         print(traceback.format_exc())
-        return jsonify({"error": "Gagal memuat soal"}), 500
+        return jsonify({"error": str(e)}), 500
 
 @app.post("/api/answer/<sid>")
 def answer(sid):
