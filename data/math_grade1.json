@@ -1,0 +1,309 @@
+{
+  "metadata": {
+    "subject": "Matematika",
+    "grade": 1,
+    "curriculum": "Kurikulum Merdeka",
+    "reference": [
+      "CP/TP Matematika Kelas 1 SD",
+      "NCTM Principles and Standards"
+    ]
+  },
+  "topics": {
+    "bilangan": {
+      "label": "Bilangan",
+      "nctm": "Number & Operations"
+    },
+    "operasi": {
+      "label": "Operasi Bilangan",
+      "nctm": "Number & Operations"
+    },
+    "geometri": {
+      "label": "Geometri",
+      "nctm": "Geometry"
+    },
+    "pengukuran": {
+      "label": "Pengukuran",
+      "nctm": "Measurement"
+    },
+    "pola": {
+      "label": "Pola & Aljabar",
+      "nctm": "Algebra"
+    }
+  },
+  "knowledge_components": [
+    {
+      "id": "KC-B1",
+      "name": "Mengenal bilangan 1–10",
+      "topic": "bilangan",
+      "difficulty": 1,
+      "cp_ref": "Peserta didik menunjukkan pemahaman bilangan cacah sampai 20",
+      "nctm_ref": "Count with understanding; recognize how many"
+    },
+    {
+      "id": "KC-B2",
+      "name": "Membilang 1–10",
+      "topic": "bilangan",
+      "difficulty": 1,
+      "cp_ref": "Peserta didik dapat melakukan operasi hitung bilangan cacah",
+      "nctm_ref": "Connect number words and numerals to quantities"
+    },
+    {
+      "id": "KC-B3",
+      "name": "Mengenal bilangan 11–20",
+      "topic": "bilangan",
+      "difficulty": 2,
+      "cp_ref": "Peserta didik menunjukkan pemahaman bilangan cacah sampai 20",
+      "nctm_ref": "Count with understanding up to 20"
+    },
+    {
+      "id": "KC-B4",
+      "name": "Membilang 11–20",
+      "topic": "bilangan",
+      "difficulty": 2,
+      "cp_ref": "Peserta didik dapat melakukan operasi hitung bilangan cacah",
+      "nctm_ref": "Connect number words to quantities up to 20"
+    },
+    {
+      "id": "KC-B5",
+      "name": "Membandingkan dua bilangan",
+      "topic": "bilangan",
+      "difficulty": 2,
+      "cp_ref": "Peserta didik dapat membandingkan bilangan cacah",
+      "nctm_ref": "Develop understanding of relative position of whole numbers"
+    },
+    {
+      "id": "KC-B6",
+      "name": "Urutan bilangan",
+      "topic": "bilangan",
+      "difficulty": 2,
+      "cp_ref": "Peserta didik dapat mengurutkan bilangan cacah",
+      "nctm_ref": "Develop understanding of ordering of whole numbers"
+    },
+    {
+      "id": "KC-B7",
+      "name": "Nilai tempat: satuan",
+      "topic": "bilangan",
+      "difficulty": 3,
+      "cp_ref": "Peserta didik memahami nilai tempat bilangan",
+      "nctm_ref": "Understand place value of ones"
+    },
+    {
+      "id": "KC-B8",
+      "name": "Nilai tempat: puluhan",
+      "topic": "bilangan",
+      "difficulty": 3,
+      "cp_ref": "Peserta didik memahami nilai tempat bilangan",
+      "nctm_ref": "Understand place value of tens"
+    },
+    {
+      "id": "KC-O1",
+      "name": "Konsep penjumlahan",
+      "topic": "operasi",
+      "difficulty": 2,
+      "cp_ref": "Peserta didik dapat melakukan operasi penjumlahan bilangan cacah",
+      "nctm_ref": "Understand addition as combining"
+    },
+    {
+      "id": "KC-O2",
+      "name": "Penjumlahan hasil sampai 10",
+      "topic": "operasi",
+      "difficulty": 2,
+      "cp_ref": "Peserta didik melakukan penjumlahan bilangan cacah sampai 20",
+      "nctm_ref": "Fluency with basic addition combinations"
+    },
+    {
+      "id": "KC-O3",
+      "name": "Penjumlahan hasil sampai 20",
+      "topic": "operasi",
+      "difficulty": 3,
+      "cp_ref": "Peserta didik melakukan penjumlahan bilangan cacah sampai 20",
+      "nctm_ref": "Fluency with addition up to 20"
+    },
+    {
+      "id": "KC-O4",
+      "name": "Konsep pengurangan",
+      "topic": "operasi",
+      "difficulty": 2,
+      "cp_ref": "Peserta didik dapat melakukan operasi pengurangan bilangan cacah",
+      "nctm_ref": "Understand subtraction as separating"
+    },
+    {
+      "id": "KC-O5",
+      "name": "Pengurangan dari bilangan sampai 10",
+      "topic": "operasi",
+      "difficulty": 2,
+      "cp_ref": "Peserta didik melakukan pengurangan bilangan cacah sampai 20",
+      "nctm_ref": "Fluency with basic subtraction combinations"
+    },
+    {
+      "id": "KC-O6",
+      "name": "Pengurangan dari bilangan sampai 20",
+      "topic": "operasi",
+      "difficulty": 3,
+      "cp_ref": "Peserta didik melakukan pengurangan bilangan cacah sampai 20",
+      "nctm_ref": "Fluency with subtraction up to 20"
+    },
+    {
+      "id": "KC-O7",
+      "name": "Hubungan penjumlahan dan pengurangan",
+      "topic": "operasi",
+      "difficulty": 4,
+      "cp_ref": "Peserta didik memahami hubungan antar operasi hitung",
+      "nctm_ref": "Inverse relationship of addition and subtraction"
+    },
+    {
+      "id": "KC-G1",
+      "name": "Mengenal bangun datar",
+      "topic": "geometri",
+      "difficulty": 1,
+      "cp_ref": "Peserta didik mengenal bangun datar dan bangun ruang",
+      "nctm_ref": "Recognize, name, and describe shapes"
+    },
+    {
+      "id": "KC-G2",
+      "name": "Sifat bangun datar",
+      "topic": "geometri",
+      "difficulty": 2,
+      "cp_ref": "Peserta didik mendeskripsikan ciri-ciri bangun datar",
+      "nctm_ref": "Describe attributes of shapes"
+    },
+    {
+      "id": "KC-G3",
+      "name": "Mengelompokkan bangun datar",
+      "topic": "geometri",
+      "difficulty": 2,
+      "cp_ref": "Peserta didik mengelompokkan bangun berdasarkan atributnya",
+      "nctm_ref": "Sort and classify shapes by attributes"
+    },
+    {
+      "id": "KC-P1",
+      "name": "Perbandingan panjang",
+      "topic": "pengukuran",
+      "difficulty": 1,
+      "cp_ref": "Peserta didik membandingkan panjang benda secara langsung",
+      "nctm_ref": "Recognize and compare measurable attributes of length"
+    },
+    {
+      "id": "KC-P2",
+      "name": "Perbandingan berat",
+      "topic": "pengukuran",
+      "difficulty": 1,
+      "cp_ref": "Peserta didik membandingkan berat benda secara langsung",
+      "nctm_ref": "Recognize and compare measurable attributes of weight"
+    },
+    {
+      "id": "KC-P3",
+      "name": "Urutan kejadian dan waktu",
+      "topic": "pengukuran",
+      "difficulty": 2,
+      "cp_ref": "Peserta didik memahami urutan waktu kejadian sehari-hari",
+      "nctm_ref": "Understand time using non-standard units"
+    },
+    {
+      "id": "KC-A1",
+      "name": "Mengenal pola berulang",
+      "topic": "pola",
+      "difficulty": 1,
+      "cp_ref": "Peserta didik mengenal pola bilangan dan pola gambar",
+      "nctm_ref": "Recognize, describe, and extend patterns"
+    },
+    {
+      "id": "KC-A2",
+      "name": "Melanjutkan pola",
+      "topic": "pola",
+      "difficulty": 2,
+      "cp_ref": "Peserta didik dapat melanjutkan pola",
+      "nctm_ref": "Extend and create patterns"
+    }
+  ],
+  "prerequisites": [
+    [
+      "KC-B1",
+      "KC-B2"
+    ],
+    [
+      "KC-B1",
+      "KC-B3"
+    ],
+    [
+      "KC-B2",
+      "KC-B4"
+    ],
+    [
+      "KC-B3",
+      "KC-B4"
+    ],
+    [
+      "KC-B2",
+      "KC-B5"
+    ],
+    [
+      "KC-B2",
+      "KC-B6"
+    ],
+    [
+      "KC-B4",
+      "KC-B7"
+    ],
+    [
+      "KC-B7",
+      "KC-B8"
+    ],
+    [
+      "KC-B2",
+      "KC-O1"
+    ],
+    [
+      "KC-O1",
+      "KC-O2"
+    ],
+    [
+      "KC-O2",
+      "KC-O3"
+    ],
+    [
+      "KC-B4",
+      "KC-O3"
+    ],
+    [
+      "KC-B2",
+      "KC-O4"
+    ],
+    [
+      "KC-O4",
+      "KC-O5"
+    ],
+    [
+      "KC-O5",
+      "KC-O6"
+    ],
+    [
+      "KC-B4",
+      "KC-O6"
+    ],
+    [
+      "KC-O3",
+      "KC-O7"
+    ],
+    [
+      "KC-O6",
+      "KC-O7"
+    ],
+    [
+      "KC-G1",
+      "KC-G2"
+    ],
+    [
+      "KC-G1",
+      "KC-G3"
+    ],
+    [
+      "KC-G2",
+      "KC-G3"
+    ],
+    [
+      "KC-A1",
+      "KC-A2"
+    ]
+  ]
+}
