@@ -50,64 +50,35 @@ def register():
     
 @app.get("/api/topics/<sid>")
 def get_topics(sid):
-    print(f"[DEBUG] get_topics called for {sid}")  # untuk debug
+    """BKT Only: Semua topik terbuka"""
     return jsonify([
-        {
-            "id": "bilangan",
-            "label": "Bilangan",
-            "n_mastered": 0,
-            "n_total": 8,
-            "completed": False,
-            "locked": False
-        },
-        {
-            "id": "operasi",
-            "label": "Operasi Bilangan",
-            "n_mastered": 0,
-            "n_total": 6,
-            "completed": False,
-            "locked": True
-        }
+        {"id": "bilangan", "label": "Bilangan", "n_mastered": 0, "n_total": 10, "locked": False, "completed": False},
+        {"id": "operasi", "label": "Operasi Bilangan", "n_mastered": 0, "n_total": 8, "locked": False, "completed": False},
     ])
+
 
 @app.get("/api/next-question/<sid>")
 def next_question(sid):
     try:
-        # Rebuild student model dari database
-        student = StudentModel(sid)
-        db_states = get_all_kc_states(sid)
+        topic = request.args.get("topic")
+        # Ambil soal random (BKT Only)
+        q = get_random_question(None)  # None = semua KC
         
-        # Load state dari DB ke model
-        for kc_id, state in db_states.items():
-            if kc_id in student.kc_states:
-                student.kc_states[kc_id].p_know = state["p_know"]
-                student.kc_states[kc_id].n_correct = state["n_correct"]
-                student.kc_states[kc_id].n_incorrect = state["n_incorrect"]
-                student.kc_states[kc_id].is_mastered = bool(state["is_mastered"])
-
-        # Pilih KC (BKT Only = random atau select_next_kc tanpa graph)
-        next_kc = random.choice(KC_IDS) if KC_IDS else None
-        
-        if not next_kc:
-            return jsonify({"error": "Tidak ada KC tersedia"})
-
-        q = get_random_question(next_kc)
         if not q:
             q = {
                 "id": 999,
-                "kc_id": next_kc,
+                "kc_id": "KC-B01",
                 "type": "pilgan",
-                "q": "Soal contoh: Berapa 2 + 3?",
+                "q": "Berapa hasil 2 + 3?",
                 "options": ["4", "5", "6", "7"],
                 "answer": "5"
             }
-        
         return jsonify(q)
     except Exception as e:
         import traceback
-        print("Next Question Error:", str(e))
+        print("ERROR next_question:", str(e))
         print(traceback.format_exc())
-        return jsonify({"error": str(e)}), 500
+        return jsonify({"error": "Gagal memuat soal"}), 500
 
 @app.post("/api/answer/<sid>")
 def answer(sid):
