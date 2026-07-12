@@ -191,23 +191,6 @@ def get_mastered_kcs(student_id):
         ).fetchall()
     return {r["kc_id"] for r in rows}
 
-def get_random_question_by_topic(kc_prefix=None):
-    """Ambil soal random, bisa difilter per topik"""
-    with get_conn() as conn:
-        if kc_prefix:
-            row = conn.execute(
-                "SELECT * FROM questions WHERE kc_id LIKE ? ORDER BY RANDOM() LIMIT 1",
-                (f"{kc_prefix}%",)
-            ).fetchone()
-        else:
-            row = conn.execute(
-                "SELECT * FROM questions ORDER BY RANDOM() LIMIT 1"
-            ).fetchone()
-    
-    if not row:
-        return None
-    return dict(row)  # fungsi get_random_question sudah handle format
-
 
 # ── Interactions ──────────────────────────────────────────────────────────────
 def log_interaction(student_id, kc_id, correct, p_before, p_after):
@@ -349,30 +332,6 @@ def count_questions(kc_id=None):
 
 def questions_seeded():
     return count_questions() > 0
-
-def get_random_question_by_topic(kc_prefix=None):
-    """Ambil soal acak + format yang sesuai frontend"""
-    try:
-        with get_conn() as conn:
-            if kc_prefix:
-                row = conn.execute(
-                    "SELECT * FROM questions WHERE kc_id LIKE ? ORDER BY RANDOM() LIMIT 1",
-                    (f"{kc_prefix}%",)
-                ).fetchone()
-            else:
-                row = conn.execute(
-                    "SELECT * FROM questions ORDER BY RANDOM() LIMIT 1"
-                ).fetchone()
-            
-            if not row:
-                return None
-                
-            # Gunakan fungsi existing yang sudah punya logic formatting
-            return get_random_question(row["kc_id"])
-            
-    except Exception as e:
-        print("Error get_random_question_by_topic:", e)
-        return None
 
 
 if __name__ == "__main__":
