@@ -1,0 +1,610 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>BelajarAja! 🌟</title>
+<link href="https://fonts.googleapis.com/css2?family=Nunito:wght@400;600;700;800;900&display=swap" rel="stylesheet">
+<style>
+:root{--sky:#4FC3F7;--sun:#FFD54F;--grass:#81C784;--coral:#FF8A65;--purple:#CE93D8;--card:#FFFDE7;--ink:#37474F;--radius:20px;--shadow:0 6px 0 rgba(0,0,0,0.12);}
+*{box-sizing:border-box;margin:0;padding:0;}
+body{font-family:'Nunito',sans-serif;background:linear-gradient(160deg,#E3F2FD 0%,#F3E5F5 50%,#E8F5E9 100%);min-height:100vh;display:flex;align-items:center;justify-content:center;padding:16px;}
+.screen{display:none;width:100%;max-width:500px;}
+.screen.active{display:block;}
+.card{background:white;border-radius:var(--radius);padding:24px 20px;box-shadow:var(--shadow),0 2px 32px rgba(0,0,0,0.08);position:relative;overflow:hidden;}
+.card::before{content:"";position:absolute;top:0;left:0;right:0;height:6px;background:linear-gradient(90deg,var(--sky),var(--purple),var(--coral),var(--sun));}
+.title{font-size:2rem;font-weight:900;color:var(--ink);text-align:center;line-height:1.1;}
+.title span{color:var(--coral);}
+.subtitle{font-size:0.9rem;color:#78909C;text-align:center;margin-top:6px;}
+.label{font-size:0.78rem;font-weight:700;color:#90A4AE;text-transform:uppercase;letter-spacing:1px;margin-bottom:6px;}
+.inp{width:100%;padding:13px 16px;font-size:1.05rem;font-family:'Nunito',sans-serif;font-weight:700;border:3px solid #E0E0E0;border-radius:14px;outline:none;transition:border-color .2s;color:var(--ink);}
+.inp:focus{border-color:var(--sky);}
+.avatars{display:flex;gap:10px;justify-content:center;margin:14px 0;}
+.av{width:54px;height:54px;font-size:1.8rem;border-radius:50%;border:4px solid #E0E0E0;background:#F5F5F5;display:flex;align-items:center;justify-content:center;cursor:pointer;transition:all .2s;}
+.av.selected{border-color:var(--coral);background:#FFF3E0;transform:scale(1.12);}
+/* Class picker */
+.class-row{display:flex;gap:8px;margin-top:4px;}
+.class-btn{flex:1;padding:10px 6px;font-size:0.82rem;font-family:'Nunito',sans-serif;font-weight:800;border:3px solid #E0E0E0;border-radius:12px;background:#F9F9F9;cursor:pointer;text-align:center;color:#90A4AE;transition:all .15s;position:relative;}
+.class-btn.active{border-color:var(--sky);background:#E3F2FD;color:#1976D2;}
+.class-btn.locked{cursor:default;opacity:0.55;}
+.class-lock{font-size:0.7rem;display:block;margin-top:2px;}
+/* Buttons */
+.btn{display:block;width:100%;padding:14px;font-size:1rem;font-family:'Nunito',sans-serif;font-weight:800;border:none;border-radius:14px;cursor:pointer;transition:all .15s;box-shadow:var(--shadow);margin-top:12px;}
+.btn:active{transform:translateY(4px);box-shadow:0 2px 0 rgba(0,0,0,0.12);}
+.btn-primary{background:var(--coral);color:white;}
+.btn-sky{background:var(--sky);color:white;}
+.btn-ghost{background:#F5F5F5;color:#78909C;box-shadow:none;border:2px solid #E0E0E0;}
+/* Topbar */
+.topbar{display:flex;align-items:center;justify-content:space-between;margin-bottom:12px;}
+.player-badge{display:flex;align-items:center;gap:6px;background:#F5F5F5;border-radius:50px;padding:5px 12px 5px 7px;}
+.player-av{font-size:1.3rem;} .player-name{font-weight:800;font-size:0.85rem;color:var(--ink);}
+.stars-badge{display:flex;align-items:center;gap:4px;background:var(--sun);border-radius:50px;padding:5px 12px;font-weight:800;font-size:0.88rem;color:#5D4037;}
+/* Topics */
+.topic-grid{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-top:12px;}
+.topic-card{border-radius:14px;padding:14px 10px;cursor:pointer;border:3px solid transparent;text-align:center;transition:all .2s;position:relative;overflow:hidden;}
+.topic-card:hover:not(.locked){transform:translateY(-3px);box-shadow:0 8px 20px rgba(0,0,0,0.1);}
+.topic-card.locked{opacity:0.5;cursor:not-allowed;}
+.topic-icon{font-size:1.9rem;display:block;margin-bottom:4px;}
+.topic-name{font-size:0.8rem;font-weight:800;color:var(--ink);display:block;line-height:1.2;}
+.topic-bar-wrap{border-radius:50px;height:5px;margin-top:7px;}
+.topic-bar{height:100%;border-radius:50px;transition:width .4s;}
+.topic-prog{font-size:0.7rem;font-weight:700;margin-top:3px;}
+.badge-corner{position:absolute;top:6px;right:6px;font-size:0.9rem;}
+<!-- Versi clean untuk Baseline -->
+<div class="topic-prog" style="color:#1976D2; font-weight:700;">
+    ${kc.name}
+</div>
+  
+/* Question box - context + question layout */
+.question-box{border-radius:var(--radius);padding:16px;margin-bottom:14px;border:3px solid #FFF9C4;background:var(--card);}
+.question-context{font-size:0.88rem;color:#78909C;font-weight:600;line-height:1.5;margin-bottom:10px;}
+.question-main{font-size:1.1rem;font-weight:800;color:var(--ink);line-height:1.4;text-align:center;}
+/* Pilgan */
+.options{display:grid;grid-template-columns:1fr 1fr;gap:8px;}
+.option{padding:13px 8px;font-size:0.92rem;font-family:'Nunito',sans-serif;font-weight:800;border:3px solid #E0E0E0;border-radius:13px;background:white;cursor:pointer;text-align:center;transition:all .15s;color:var(--ink);box-shadow:0 4px 0 #E0E0E0;}
+.option:hover:not(:disabled){border-color:var(--sky);background:#E3F2FD;transform:translateY(-2px);box-shadow:0 6px 0 #B3E5FC;}
+.option.correct{border-color:var(--grass);background:#E8F5E9;box-shadow:0 4px 0 #A5D6A7;color:#2E7D32;animation:pop .3s ease;}
+.option.wrong{border-color:var(--coral);background:#FBE9E7;box-shadow:0 4px 0 #FFCCBC;color:#BF360C;}
+.option:disabled{cursor:default;}
+/* Numpad */
+.numpad-wrap{display:flex;flex-direction:column;align-items:center;gap:10px;}
+.numpad-display{display:flex;align-items:center;justify-content:center;gap:8px;background:#F3F4F6;border-radius:16px;padding:10px 20px;min-width:150px;border:3px solid #E0E0E0;}
+.numpad-answer{font-size:2.6rem;font-weight:900;color:#B0BEC5;min-width:60px;text-align:center;}
+.numpad-answer.has-val{color:#1976D2;}
+.numpad-clear{background:none;border:none;font-size:1.3rem;cursor:pointer;padding:4px 8px;border-radius:8px;color:#90A4AE;}
+.numpad-clear:hover{background:#FBE9E7;color:var(--coral);}
+.numpad-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:8px;width:100%;max-width:270px;}
+.numpad-btn{padding:15px 6px;font-size:1.5rem;font-family:'Nunito',sans-serif;font-weight:900;border:3px solid #E0E0E0;border-radius:14px;background:white;cursor:pointer;text-align:center;transition:all .12s;color:var(--ink);box-shadow:0 5px 0 #E0E0E0;}
+.numpad-btn:active{transform:translateY(4px);box-shadow:0 1px 0 #E0E0E0;}
+.numpad-btn:hover:not(:disabled){border-color:var(--sky);background:#E3F2FD;}
+.numpad-btn:disabled{opacity:0.4;cursor:default;}
+.numpad-btn.zero{grid-column:span 2;}
+.numpad-submit{width:100%;max-width:270px;padding:14px;font-size:1rem;font-family:'Nunito',sans-serif;font-weight:800;background:var(--coral);color:white;border:none;border-radius:14px;cursor:pointer;box-shadow:0 5px 0 #E64A19;transition:all .15s;}
+.numpad-submit:active{transform:translateY(4px);box-shadow:0 2px 0 #E64A19;}
+.numpad-submit:disabled{background:#B0BEC5;box-shadow:0 4px 0 #90A4AE;cursor:default;}
+/* Hitung */
+.hitung-canvas{background:linear-gradient(135deg,#E8F5E9,#F3E5F5);border-radius:16px;padding:16px;display:flex;flex-wrap:wrap;gap:8px;align-content:flex-start;justify-content:center;border:3px solid #C8E6C9;margin-bottom:10px;min-height:120px;}
+.hitung-obj{font-size:2rem;cursor:pointer;transition:all .18s;border-radius:50%;padding:5px;border:3px solid transparent;user-select:none;position:relative;display:inline-flex;align-items:center;justify-content:center;}
+.hitung-obj:hover:not(.done){transform:scale(1.15);}
+.hitung-obj.clicked{border-color:#1976D2;background:rgba(33,150,243,0.15);}
+.hitung-obj.done{cursor:default;}
+.hitung-counter{position:absolute;top:-6px;right:-6px;background:#1976D2;color:white;border-radius:50%;width:20px;height:20px;font-size:0.62rem;font-weight:900;display:flex;align-items:center;justify-content:center;}
+.hitung-scoreboard{display:flex;align-items:center;justify-content:center;gap:10px;margin-bottom:10px;}
+.hitung-count-display{background:white;border-radius:50px;padding:7px 18px;font-size:1.4rem;font-weight:900;color:#1976D2;border:3px solid #BBDEFB;}
+.hitung-submit{padding:11px 24px;font-family:'Nunito',sans-serif;font-weight:800;font-size:0.95rem;background:var(--grass);color:white;border:none;border-radius:13px;cursor:pointer;box-shadow:0 4px 0 #4CAF50;transition:all .15s;}
+.hitung-submit:disabled{background:#B0BEC5;box-shadow:0 4px 0 #90A4AE;cursor:default;}
+/* Jodohkan */
+.jodohkan-wrap{display:flex;gap:12px;align-items:center;}
+.jodohkan-left{flex:1;background:linear-gradient(135deg,#E3F2FD,#E8F5E9);border-radius:16px;padding:14px;text-align:center;border:3px solid #BBDEFB;min-height:80px;display:flex;align-items:center;justify-content:center;flex-wrap:wrap;gap:4px;font-size:1.6rem;}
+.jodohkan-arrow{font-size:1.4rem;color:#90A4AE;}
+.jodohkan-opts{display:flex;flex-direction:column;gap:8px;min-width:70px;}
+.jodohkan-opt{padding:12px 8px;font-size:1.3rem;font-family:'Nunito',sans-serif;font-weight:900;border:3px solid #E0E0E0;border-radius:13px;background:white;cursor:pointer;text-align:center;transition:all .15s;color:var(--ink);box-shadow:0 4px 0 #E0E0E0;}
+.jodohkan-opt:hover:not(:disabled){border-color:var(--sky);background:#E3F2FD;}
+.jodohkan-opt.correct{border-color:var(--grass);background:#E8F5E9;color:#2E7D32;}
+.jodohkan-opt.wrong{border-color:var(--coral);background:#FBE9E7;color:#BF360C;}
+.jodohkan-opt:disabled{cursor:default;}
+/* Hitung Warna */
+.hitung-warna-box{background:#FFF8E1;border:3px solid #FFD54F;border-radius:16px;padding:14px;text-align:center;margin-bottom:10px;font-size:1.8rem;line-height:1.8;min-height:80px;display:flex;align-items:center;justify-content:center;flex-wrap:wrap;gap:4px;}
+.target-label{text-align:center;font-size:0.9rem;font-weight:700;color:#78909C;margin-bottom:8px;}
+.target-label span{font-size:1.4rem;}
+/* Visual Tambah */
+.visual-tambah-wrap{display:flex;align-items:center;justify-content:center;gap:10px;margin-bottom:14px;flex-wrap:wrap;}
+.vt-group{background:linear-gradient(135deg,#E3F2FD,#F3E5F5);border-radius:14px;padding:12px 14px;text-align:center;border:3px solid #BBDEFB;min-width:80px;}
+.vt-emojis{font-size:1.5rem;line-height:1.6;min-height:40px;}
+.vt-label{font-size:0.75rem;font-weight:700;color:#1976D2;margin-top:4px;}
+.vt-plus{font-size:1.8rem;font-weight:900;color:#78909C;}
+.vt-eq{font-size:1.8rem;font-weight:900;color:#78909C;}
+.vt-result{background:#FFF9C4;border-radius:14px;padding:12px 14px;border:3px solid #FFD54F;font-size:2rem;font-weight:900;color:#F57F17;min-width:70px;text-align:center;}
+/* Feedback */
+.feedback{border-radius:14px;padding:12px 14px;text-align:center;font-weight:800;font-size:0.92rem;margin-top:12px;display:none;}
+.feedback.show{display:block;animation:slideUp .3s ease;}
+.feedback.good{background:#E8F5E9;color:#2E7D32;}
+.feedback.bad{background:#FBE9E7;color:#BF360C;}
+.feedback .fb-emoji{font-size:1.5rem;display:block;margin-bottom:3px;}
+#btn-next{display:none;margin-top:10px;}
+.btn-back{background:none;border:none;cursor:pointer;font-size:1.1rem;padding:4px 8px;border-radius:8px;color:#90A4AE;font-family:'Nunito',sans-serif;font-weight:700;}
+.btn-back:hover{background:#F5F5F5;}
+.toast{position:fixed;top:18px;left:50%;transform:translateX(-50%) translateY(-80px);background:white;border-radius:50px;padding:10px 22px;font-weight:800;font-size:0.88rem;box-shadow:0 8px 32px rgba(0,0,0,0.15);border:3px solid var(--sun);transition:transform .4s cubic-bezier(.34,1.56,.64,1);z-index:999;white-space:nowrap;}
+.toast.show{transform:translateX(-50%) translateY(0);}
+.done-emoji{font-size:3.8rem;text-align:center;display:block;margin-bottom:10px;}
+.deco{position:fixed;font-size:2.2rem;opacity:0.1;pointer-events:none;user-select:none;}
+@keyframes pop{0%{transform:scale(1)}50%{transform:scale(1.1)}100%{transform:scale(1)}}
+@keyframes slideUp{from{opacity:0;transform:translateY(10px)}to{opacity:1;transform:translateY(0)}}
+@keyframes starPop{0%{transform:scale(0) rotate(-20deg);opacity:0}60%{transform:scale(1.3) rotate(10deg);opacity:1}100%{transform:scale(1) rotate(0);opacity:1}}
+.star-anim{display:inline-block;animation:starPop .5s ease forwards;}
+</style>
+</head>
+<body>
+<span class="deco" style="top:5%;left:3%">⭐</span>
+<span class="deco" style="top:10%;right:4%">🌙</span>
+<span class="deco" style="bottom:8%;left:5%">🌈</span>
+<span class="deco" style="bottom:10%;right:3%">✨</span>
+<div class="toast" id="toast"></div>
+
+<!-- ══ REGISTER ══════════════════════════════════════════════════════════ -->
+<div class="screen active" id="screen-register">
+  <div class="card">
+    <div class="title">Halo! 👋<br><span>Siapa namamu?</span></div>
+    <div class="subtitle">Yuk belajar Matematika bersama!</div>
+    <div style="margin-top:18px;"><div class="label">Nama kamu</div>
+      <input class="inp" id="inp-name" type="text" placeholder="Tulis namamu..." maxlength="20" autocomplete="off">
+    </div>
+    
+    <div style="margin-top:14px;"><div class="label">Pilih kelas</div>
+      <div class="class-row" id="class-picker">
+        <div class="class-btn active" data-cls="1">Kelas 1<span class="class-lock"></span></div>
+        <div class="class-btn locked" data-cls="2">Kelas 2<span class="class-lock">🔒 Segera hadir</span></div>
+        <div class="class-btn locked" data-cls="3">Kelas 3<span class="class-lock">🔒 Segera hadir</span></div>
+        <div class="class-btn locked" data-cls="4">Kelas 4<span class="class-lock">🔒 Segera hadir</span></div>
+      </div>
+    </div>
+    <div style="margin-top:14px;"><div class="label">Pilih karakter</div>
+      <div class="avatars" id="avatar-picker">
+        <div class="av selected" data-av="1">🦊</div>
+        <div class="av" data-av="2">🐧</div>
+        <div class="av" data-av="3">🦄</div>
+        <div class="av" data-av="4">🐸</div>
+        <div class="av" data-av="5">🐼</div>
+      </div>
+    </div>
+    <button class="btn btn-primary" id="btn-start">Mulai Belajar! 🚀</button>
+  </div>
+</div>
+
+<!-- ══ TOPICS ════════════════════════════════════════════════════════════ -->
+<div class="screen" id="screen-topics">
+  <div class="card">
+    <div class="topbar">
+      <div class="player-badge"><span class="player-av" id="t-av">🦊</span><span class="player-name" id="t-name">-</span></div>
+      <div class="stars-badge">⭐ <span id="t-stars">0</span></div>
+    </div>
+    <div style="font-size:1rem;font-weight:800;color:var(--ink);margin-bottom:2px;">Pilih Topik 📚</div>
+    <div class="subtitle" style="text-align:left;font-size:0.82rem;">Mau belajar apa hari ini?</div>
+    <div class="topic-grid" id="topic-grid"></div>
+  </div>
+</div>
+
+<!-- ══ QUESTION ══════════════════════════════════════════════════════════ -->
+<div class="screen" id="screen-question">
+  <div class="card">
+    <div class="topbar">
+      <div style="display:flex;align-items:center;gap:5px;">
+        <button class="btn-back" id="btn-back">←</button>
+        <div class="player-badge"><span class="player-av" id="q-av">🦊</span><span class="player-name" id="q-name">-</span></div>
+      </div>
+      <div class="stars-badge">⭐ <span id="q-stars">0</span></div>
+    </div>
+    <div class="progress-wrap"><div class="progress-bar" id="prog-bar" style="width:0%"></div></div>
+    <div class="progress-label" id="prog-label">0 / 23 KC</div>
+    <div style="margin-top:8px;margin-bottom:4px;"><span class="kc-badge" id="kc-name">...</span></div>
+    <div class="question-box" id="question-box">
+      <div class="question-context" id="question-ctx" style="display:none"></div>
+      <div class="question-main" id="question-main">Memuat soal... ⏳</div>
+    </div>
+    <div id="question-body"></div>
+    <div class="feedback" id="feedback"><span class="fb-emoji" id="fb-emoji"></span><span id="fb-text"></span></div>
+    <button class="btn btn-sky" id="btn-next">Soal Berikutnya ➡️</button>
+  </div>
+</div>
+
+<!-- ══ TOPIC DONE ═════════════════════════════════════════════════════════ -->
+<div class="screen" id="screen-topic-done">
+  <div class="card" style="text-align:center;">
+    <span class="done-emoji" id="td-emoji">🎉</span>
+    <div class="title"><span id="td-title">Topik Selesai!</span></div>
+    <p style="margin-top:10px;color:#78909C;font-size:0.88rem;font-weight:600;" id="td-msg"></p>
+    <button class="btn btn-primary" id="btn-back-topics" style="margin-top:18px;">← Kembali ke Topik</button>
+  </div>
+</div>
+
+<!-- ══ ALL DONE ═══════════════════════════════════════════════════════════ -->
+<div class="screen" id="screen-done">
+  <div class="card" style="text-align:center;">
+    <span class="done-emoji">🏆</span>
+    <div class="title">Luar Biasa!<br><span>Kamu Hebat!</span></div>
+    <p style="margin-top:10px;color:#78909C;font-size:0.88rem;font-weight:600;">Semua topik sudah selesai!</p>
+    <div style="margin-top:14px;font-size:1.7rem;font-weight:900;color:#F57F17;">⭐ <span id="final-stars">0</span> bintang</div>
+    <button class="btn btn-primary" id="btn-again" style="margin-top:18px;">Mulai Lagi 🔄</button>
+  </div>
+</div>
+
+<script>
+const AVATARS={1:"🦊",2:"🐧",3:"🦄",4:"🐸",5:"🐼"};
+const TOPIC_META={
+  bilangan:{icon:"🔢",bg:"#E3F2FD",ac:"#1976D2"},
+  operasi:{icon:"➕",bg:"#E8F5E9",ac:"#388E3C"},
+  geometri:{icon:"🔷",bg:"#FBE9E7",ac:"#E64A19"},
+  pengukuran:{icon:"📏",bg:"#FFF8E1",ac:"#F57F17"},
+  pola:{icon:"🔄",bg:"#F3E5F5",ac:"#7B1FA2"},
+};
+
+const TOPIC_LABELS = {
+    "bilangan": "Bilangan",
+    "operasi": "Operasi Bilangan",
+    "geometri": "Geometri",
+    "pengukuran": "Pengukuran",
+    "pola": "Pola & Aljabar"
+};
+  
+const CORRECT_MSG=[["Benar sekali! 🎉","Kamu hebat!"],["Luar biasa! ⭐","Terus semangat!"],["Betul! 🌟","Pintar!"],["Yay! 🥳","Jawaban tepat!"]];
+const WRONG_MSG=[["Hampir benar! 💪","Coba lagi ya!"],["Belum tepat 🤔","Jangan menyerah!"],["Yuk coba lagi! 😊","Pasti bisa!"]];
+
+let state={sid:null,name:"",avatar:1,grade:1,topic:null,currentKC:null,currentAnswer:null,currentType:null,answered:false};
+
+function show(id){document.querySelectorAll(".screen").forEach(s=>s.classList.remove("active"));document.getElementById("screen-"+id).classList.add("active");}
+function showToast(msg){const t=document.getElementById("toast");t.textContent=msg;t.classList.add("show");setTimeout(()=>t.classList.remove("show"),2800);}
+async function api(path,method="GET",body=null){
+  const opts={method,headers:{"Content-Type":"application/json"}};
+  if(body)opts.body=JSON.stringify(body);
+  const r=await fetch(path,opts);
+  if(!r.ok){let e;try{e=(await r.json()).error;}catch{e=r.statusText;}throw new Error(e||`HTTP ${r.status}`);}
+  return r.json();
+}
+
+// ── Register ─────────────────────────────────────────────────────────────────
+document.querySelectorAll(".av").forEach(el=>el.addEventListener("click",()=>{
+  document.querySelectorAll(".av").forEach(a=>a.classList.remove("selected"));
+  el.classList.add("selected"); state.avatar=parseInt(el.dataset.av);
+}));
+document.querySelectorAll(".class-btn").forEach(el=>el.addEventListener("click",()=>{
+  if(el.classList.contains("locked"))return;
+  document.querySelectorAll(".class-btn").forEach(b=>b.classList.remove("active"));
+  el.classList.add("active"); state.grade=parseInt(el.dataset.cls);
+}));
+document.getElementById("btn-start").addEventListener("click",async()=>{
+  const name=document.getElementById("inp-name").value.trim();
+  if(!name){document.getElementById("inp-name").style.borderColor="var(--coral)";document.getElementById("inp-name").focus();return;}
+  try{
+    const res=await api("/api/register","POST",{name,avatar:state.avatar});
+    state.sid=res.student_id;state.name=res.name;
+    updatePlayerUI();show("topics");loadTopics();
+  }catch(e){alert("Gagal daftar: "+e.message);}
+});
+
+// ── Topics ────────────────────────────────────────────────────────────────────
+async function loadTopics(){
+  try{
+    const[topics,stu]=await Promise.all([api(`/api/topics/${state.sid}`),api(`/api/student/${state.sid}`)]);
+    ["t-stars","q-stars"].forEach(id=>document.getElementById(id).textContent=stu.total_stars||0);
+    renderTopics(topics);
+    if(topics.every(t=>t.completed)){document.getElementById("final-stars").textContent=stu.total_stars||0;show("done");}
+  }catch(e){console.error(e);}
+}
+function renderTopics(topics){
+  const grid=document.getElementById("topic-grid");grid.innerHTML="";
+  topics.forEach(t=>{
+    const m=TOPIC_META[t.id]||{icon:"📚",bg:"#F5F5F5",ac:"#607D8B"};
+    const pct=t.n_total>0?Math.round(t.n_mastered/t.n_total*100):0;
+    const card=document.createElement("div");
+    card.className="topic-card"+(t.locked?" locked":"")+(t.completed?" completed":"");
+    card.style.background=m.bg;
+    card.style.borderColor=t.completed?"#81C784":t.locked?"#E0E0E0":m.ac+"55";
+    card.innerHTML=`<span class="badge-corner">${t.locked?"🔒":t.completed?"✅":""}</span>
+      <span class="topic-icon">${m.icon}</span>
+      <span class="topic-name">${t.label}</span>
+      <div class="topic-bar-wrap" style="background:rgba(0,0,0,0.1)">
+        <div class="topic-bar" style="width:${pct}%;background:${m.ac}"></div>
+      </div>
+      <div class="topic-prog" style="color:${m.ac}">${t.n_mastered}/${t.n_total} selesai</div>`;
+    if(!t.locked)card.addEventListener("click",()=>startTopic(t.id));
+    else card.title="Selesaikan topik lain dulu!";
+    grid.appendChild(card);
+  });
+}
+
+async function startTopic(topicId) {
+    state.topic = topicId;
+    show("question");           // Langsung ke soal
+    await loadNextQuestion();   // Mulai soal pertama
+}
+
+async function startPracticeKC(kcId) {
+    state.currentKC = kcId;
+    show("question");
+    await loadNextQuestion();
+}
+
+function backToTopics() {
+    show("topics");
+    loadTopics();
+}
+
+document.getElementById("btn-back").addEventListener("click",()=>{state.topic=null;show("topics");loadTopics();});
+document.getElementById("btn-back-topics").addEventListener("click",()=>{show("topics");loadTopics();});
+
+// ── Question Flow ─────────────────────────────────────────────────────────────
+async function loadNextQuestion(){
+  state.answered=false;
+  document.getElementById("feedback").classList.remove("show");
+  document.getElementById("btn-next").style.display="none";
+  document.getElementById("question-body").innerHTML="";
+  document.getElementById("kc-name").textContent="...";
+  setQuestion("","Memuat soal... ⏳");
+  try{
+    const url=`/api/next-question/${state.sid}`+(state.topic?`?topic=${state.topic}`:"");
+    const q=await api(url);
+    if(q.done){
+      document.getElementById("td-emoji").textContent=q.message&&q.message.includes("lain dulu")?"🔒":"🎉";
+      document.getElementById("td-title").textContent=q.message&&q.message.includes("lain dulu")?"Topik Terkunci":"Topik Selesai!";
+      document.getElementById("td-msg").textContent=q.message;
+      show("topic-done");return;
+    }
+    state.currentKC=q.kc_id;
+    state.currentAnswer=String(q.answer).trim().toLowerCase();
+    state.currentType=q.type||"pilgan";
+    document.getElementById("kc-name").textContent="📚 "+(q.kc_name||q.kc_id);
+    // Split question into context + main
+    const parts=q.q.split("\n\n");
+    if(parts.length>=2){setQuestion(parts.slice(0,-1).join("\n\n"),parts[parts.length-1]);}
+    else{setQuestion("",q.q);}
+    renderBody(q);
+    const prog=await api(`/api/progress/${state.sid}`);
+    if(prog&&!prog.error)updateProgress(prog);
+  }catch(e){setQuestion("","Gagal memuat: "+e.message);}
+}
+
+function setQuestion(ctx,main){
+  const ctxEl=document.getElementById("question-ctx");
+  const mainEl=document.getElementById("question-main");
+  if(ctx){ctxEl.style.display="block";ctxEl.textContent=ctx;}
+  else{ctxEl.style.display="none";}
+  mainEl.textContent=main;
+}
+
+function makeNumpad(q){
+  let numVal="";
+  const wrap=document.createElement("div");wrap.className="numpad-wrap";
+  // Display
+  const disp=document.createElement("div");disp.className="numpad-display";
+  const ans=document.createElement("span");ans.className="numpad-answer";ans.textContent="?";ans.id="numpad-ans";
+  const clr=document.createElement("button");clr.className="numpad-clear";clr.textContent="⌫";
+  clr.addEventListener("click",()=>{
+    numVal=numVal.slice(0,-1);
+    ans.textContent=numVal||"?";ans.className="numpad-answer"+(numVal?" has-val":"");
+    sbmt.disabled=!numVal;
+  });
+  disp.appendChild(ans);disp.appendChild(clr);wrap.appendChild(disp);
+  // Grid
+  const grid=document.createElement("div");grid.className="numpad-grid";
+  [1,2,3,4,5,6,7,8,9].forEach(n=>{
+    const btn=document.createElement("button");btn.className="numpad-btn";btn.textContent=n;
+    btn.addEventListener("click",()=>{
+      if(state.answered||numVal.length>=2)return;
+      numVal+=n;ans.textContent=numVal;ans.className="numpad-answer has-val";sbmt.disabled=false;
+    });
+    grid.appendChild(btn);
+  });
+  // 0 — spans 2 columns
+  const btn0=document.createElement("button");btn0.className="numpad-btn zero";btn0.textContent="0";
+  btn0.addEventListener("click",()=>{
+    if(state.answered||numVal.length>=2)return;
+    // Only allow 0 if already has a digit (e.g., 10, 20)
+    if(numVal.length===0)return;
+    numVal+="0";ans.textContent=numVal;ans.className="numpad-answer has-val";sbmt.disabled=false;
+  });
+  grid.appendChild(btn0);
+  wrap.appendChild(grid);
+  // Submit
+  const sbmt=document.createElement("button");sbmt.className="numpad-submit";sbmt.textContent="✓ Jawab!";sbmt.disabled=true;
+  sbmt.addEventListener("click",()=>{
+    if(!numVal||state.answered)return;
+    sbmt.disabled=true;clr.disabled=true;
+    grid.querySelectorAll(".numpad-btn").forEach(b=>b.disabled=true);
+    submitAnswer(numVal,q);
+  });
+  wrap.appendChild(sbmt);
+  return wrap;
+}
+
+function renderBody(q){
+  const wrap=document.getElementById("question-body");
+  wrap.innerHTML="";
+  const type=q.type||"pilgan";
+
+  if(type==="pilgan"){
+    const grid=document.createElement("div");grid.className="options";
+    (q.options||[]).forEach(opt=>{
+      const btn=document.createElement("button");btn.className="option";btn.textContent=opt;btn.dataset.val=opt;
+      btn.addEventListener("click",()=>submitAnswer(String(opt),q));
+      grid.appendChild(btn);
+    });
+    wrap.appendChild(grid);
+
+  } else if(type==="isian"){
+    wrap.appendChild(makeNumpad(q));
+
+  } else if(type==="hitung"){
+    // Scoreboard
+    const sb=document.createElement("div");sb.className="hitung-scoreboard";
+    const disp=document.createElement("div");disp.className="hitung-count-display";disp.id="hitung-disp";disp.textContent="0";
+    const sbmt=document.createElement("button");sbmt.className="hitung-submit";sbmt.textContent="✓ Selesai!";sbmt.disabled=true;
+    sb.appendChild(document.createTextNode("Sudah dihitung: "));sb.appendChild(disp);sb.appendChild(sbmt);
+    wrap.appendChild(sb);
+    // Canvas
+    const canvas=document.createElement("div");canvas.className="hitung-canvas";
+    let clickCount=0;
+    for(let i=0;i<parseInt(q.count);i++){
+      const obj=document.createElement("div");obj.className="hitung-obj";obj.textContent=q.emoji;
+      obj.addEventListener("click",function(){
+        if(state.answered||this.classList.contains("clicked"))return;
+        clickCount++;this.classList.add("clicked");
+        const badge=document.createElement("span");badge.className="hitung-counter";badge.textContent=clickCount;
+        this.appendChild(badge);
+        disp.textContent=clickCount;sbmt.disabled=false;
+      });
+      canvas.appendChild(obj);
+    }
+    wrap.appendChild(canvas);
+    sbmt.addEventListener("click",()=>{
+      if(state.answered)return;
+      canvas.querySelectorAll(".hitung-obj").forEach(o=>o.classList.add("done"));
+      sbmt.disabled=true;submitAnswer(String(clickCount),q);
+    });
+    // Tambahkan tombol "Input Langsung"
+    const directBtn = document.createElement("button");
+    directBtn.textContent = "Input Langsung Angka";
+    directBtn.className = "btn btn-sky";
+    directBtn.onclick = () => {
+        const num = prompt("Masukkan jumlah " + q.emoji);
+        if(num) submitAnswer(num, q);
+    };
+    wrap.appendChild(directBtn);
+
+  } else if(type==="jodohkan"){
+    const jw=document.createElement("div");jw.className="jodohkan-wrap";
+    // Left: emoji box
+    const left=document.createElement("div");left.className="jodohkan-left";
+    let vis="";for(let i=0;i<parseInt(q.count);i++)vis+=q.emoji+" ";
+    left.textContent=vis.trim();
+    // Arrow
+    const arr=document.createElement("div");arr.className="jodohkan-arrow";arr.textContent="→";
+    // Right: options
+    const opts=document.createElement("div");opts.className="jodohkan-opts";
+    (q.options||[]).forEach(opt=>{
+      const btn=document.createElement("button");btn.className="jodohkan-opt";btn.textContent=opt;btn.dataset.val=opt;
+      btn.addEventListener("click",()=>{
+        if(state.answered)return;
+        const correct=String(opt)===state.currentAnswer;
+        document.querySelectorAll(".jodohkan-opt").forEach(b=>{
+          b.disabled=true;
+          if(String(b.dataset.val)===state.currentAnswer)b.classList.add("correct");
+          else if(String(b.dataset.val)===String(opt)&&!correct)b.classList.add("wrong");
+        });
+        submitAnswer(String(opt),q);
+      });
+      opts.appendChild(btn);
+    });
+    jw.appendChild(left);jw.appendChild(arr);jw.appendChild(opts);
+    wrap.appendChild(jw);
+
+  } else if(type==="hitung_warna"){
+    // Show mixed emoji box
+    const box=document.createElement("div");box.className="hitung-warna-box";
+    (q.emoji_box||"").split("").forEach(ch=>{
+      if(ch.trim())box.appendChild(document.createTextNode(ch+" "));
+    });
+    wrap.appendChild(box);
+    // Target label
+    const lbl=document.createElement("div");lbl.className="target-label";
+    lbl.innerHTML=`Hitung ada berapa <span>${q.target||"?"}</span> di atas!`;
+    wrap.appendChild(lbl);
+    // Numpad
+    wrap.appendChild(makeNumpad(q));
+
+  } else if(type==="visual_tambah"){
+    // Show emoji groups A + B = ?
+    const vw=document.createElement("div");vw.className="visual-tambah-wrap";
+    // Group A
+    const gA=document.createElement("div");gA.className="vt-group";
+    let emA="";for(let i=0;i<parseInt(q.count1||0);i++)emA+=q.emoji1+" ";
+    gA.innerHTML=`<div class="vt-emojis">${emA.trim()}</div><div class="vt-label">${q.count1} ${q.emoji1}</div>`;
+    // Plus
+    const plus=document.createElement("div");plus.className="vt-plus";plus.textContent="+";
+    // Group B
+    const gB=document.createElement("div");gB.className="vt-group";
+    let emB="";for(let i=0;i<parseInt(q.count2||0);i++)emB+=q.emoji2+" ";
+    gB.innerHTML=`<div class="vt-emojis">${emB.trim()}</div><div class="vt-label">${q.count2} ${q.emoji2}</div>`;
+    // Equals
+    const eq=document.createElement("div");eq.className="vt-eq";eq.textContent="=";
+    // Result box
+    const res=document.createElement("div");res.className="vt-result";res.textContent="?";
+    vw.appendChild(gA);vw.appendChild(plus);vw.appendChild(gB);vw.appendChild(eq);vw.appendChild(res);
+    wrap.appendChild(vw);
+    // Numpad
+    const np=makeNumpad(q);
+    // Override submit to also update result box
+    const origSubmit=np.querySelector(".numpad-submit");
+    const origClick=origSubmit.onclick;
+    np.querySelector(".numpad-answer").addEventListener("_change",()=>{});
+    // Intercept numpad answer display to mirror in result box
+    const observer=new MutationObserver(()=>{
+      const v=np.querySelector(".numpad-answer").textContent;
+      res.textContent=v==="?"?"?":v;
+    });
+    observer.observe(np.querySelector(".numpad-answer"),{childList:true,characterData:true,subtree:true});
+    wrap.appendChild(np);
+  }
+}
+
+async function submitAnswer(userVal,q){
+  if(state.answered)return;
+  state.answered=true;
+  const correct=String(userVal).trim().toLowerCase()===state.currentAnswer;
+  const type=q.type||"pilgan";
+
+  // Visual feedback
+  if(type==="pilgan"){
+    document.querySelectorAll(".option").forEach(b=>{
+      b.disabled=true;
+      const v=String(b.dataset.val).trim().toLowerCase();
+      if(v===state.currentAnswer)b.classList.add("correct");
+      else if(v===String(userVal).trim().toLowerCase()&&!correct)b.classList.add("wrong");
+    });
+  } else if(type==="isian"||type==="hitung"||type==="hitung_warna"||type==="visual_tambah"){
+    const ans=document.getElementById("numpad-ans");
+    if(ans)ans.style.color=correct?"#388E3C":"#E64A19";
+    const disp=document.getElementById("hitung-disp");
+    if(disp)disp.style.color=correct?"#388E3C":"#E64A19";
+  }
+
+  try{
+    let body={kc_id:state.currentKC};
+    if(type==="isian"||type==="hitung"||type==="hitung_warna"||type==="visual_tambah"){
+      body.user_answer=userVal;body.correct_answer=state.currentAnswer;
+    } else {body.correct=correct;}
+    const res=await api(`/api/answer/${state.sid}`,"POST",body);
+    showFeedback(correct,res);
+    if(res.mastered)showToast("🎊 Materi dikuasai!");
+    if(res.progress)updateProgress(res.progress);
+  }catch(e){console.error(e);}
+  document.getElementById("btn-next").style.display="block";
+}
+
+function showFeedback(correct,res){
+  const[title,sub]=(correct?CORRECT_MSG:WRONG_MSG)[Math.floor(Math.random()*(correct?CORRECT_MSG:WRONG_MSG).length)];
+  let extra=(res&&res.stars_earned>0)?`<br><span class="star-anim" style="font-size:1rem;display:inline-block;margin-top:3px">+${res.stars_earned} ⭐</span>`:"";
+  document.getElementById("fb-emoji").textContent=correct?"🌟":"💡";
+  document.getElementById("fb-text").innerHTML=`<strong>${title}</strong><br><span style="font-size:.84rem;font-weight:600">${sub}</span>${extra}`;
+  document.getElementById("feedback").className="feedback show "+(correct?"good":"bad");
+}
+function updateProgress(prog){
+  document.getElementById("prog-bar").style.width=(prog.pct||0)+"%";
+  document.getElementById("prog-label").textContent=`${prog.mastered}/${prog.total} KC selesai`;
+  ["q-stars","t-stars"].forEach(id=>document.getElementById(id).textContent=prog.stars||0);
+}
+function updatePlayerUI(){
+  const av=AVATARS[state.avatar]||"🦊";
+  ["t","q"].forEach(p=>{
+    document.getElementById(p+"-av").textContent=av;
+    document.getElementById(p+"-name").textContent=state.name;
+  });
+}
+document.getElementById("btn-next").addEventListener("click",loadNextQuestion);
+document.getElementById("btn-again").addEventListener("click",()=>{
+  state={sid:null,name:"",avatar:1,grade:1,topic:null,currentKC:null,currentAnswer:null,currentType:null,answered:false};
+  document.getElementById("inp-name").value="";
+  show("register");
+});
+</script>
+</body>
+</html>
