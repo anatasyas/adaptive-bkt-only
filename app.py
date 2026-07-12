@@ -1,6 +1,6 @@
 """
 BKT Only - Tanpa Ontologi
-Untuk perbandingan dengan versi BKT + Ontologi
+Versi untuk perbandingan dengan BKT+Ontologi
 """
 
 from flask import Flask, request, jsonify, send_from_directory
@@ -8,24 +8,18 @@ import random, os
 
 app = Flask(__name__, static_folder="static", template_folder="static")
 
-# Import tanpa ontologi
-from bkt_engine import StudentModel, process_response, select_next_kc, DEFAULT_BKT_PARAMS
+# Import
 from database import (
-    init_db, create_student, get_student, add_stars,
-    get_random_question, upsert_kc_state, get_all_kc_states
+    init_db, create_student, get_student, get_random_question,
+    upsert_kc_state, get_all_kc_states, seed_ontology
 )
-
-# Load semua KC dari database (tanpa ontologi)
-KC_IDS = []
+from seed_questions import seed
 
 def init_bkt_only():
-    global KC_IDS
     init_db()
-    from database import get_conn
-    with get_conn() as conn:
-        rows = conn.execute("SELECT id FROM knowledge_components").fetchall()
-        KC_IDS = [r[0] for r in rows]
-    print(f"✅ BKT-Only initialized with {len(KC_IDS)} KC")
+    seed_ontology()   # Pastikan KC & questions terisi
+    seed()            # Seed soal
+    print("✅ BKT-Only initialized successfully")
 
 init_bkt_only()
 
@@ -35,19 +29,25 @@ def index():
 
 @app.post("/api/register")
 def register():
-    data = request.json
-    name = data.get("name", "Siswa").strip() or "Siswa"
-    avatar = int(data.get("avatar", 1))
-    sid = f"S{random.randint(10000,99999)}"
+    try:
+        data = request.json or {}
+        name = data.get("name", "Siswa").strip() or "Siswa"
+        avatar = int(data.get("avatar", 1))
+        sid = f"S{random.randint(10000,99999)}"
 
-    create_student(sid, name, avatar)
+        create_student(sid, name, avatar)
 
-    # Inisialisasi dengan p_know default
-    for kc_id in KC_IDS:
-        upsert_kc_state(sid, kc_id, 0.3, 0, 0, False)
+        # Inisialisasi KC state default
+        with get_conn() as conn:   # pastikan import get_conn
+            kcs = conn.execute("SELECT id FROM knowledge_components").fetchall()
+            for kc in kcs:
+                upsert_kc_state(sid, kc[0], 0.3, 0, 0, False)
 
-    return jsonify({"student_id": sid, "name": name})
-    
+        return jsonify({"student_id": sid, "name": name})
+    except Exception as e:
+        print("Register Error:", e)
+        return jsonify({"error": str(e)}), 500
+
 @app.get("/api/topics/<sid>")
 def get_topics(sid):
     """BKT Only: Semua topik terbuka"""
@@ -56,44 +56,39 @@ def get_topics(sid):
         {"id": "operasi", "label": "Operasi Bilangan", "n_mastered": 0, "n_total": 8, "locked": False, "completed": False},
     ])
 
-
 @app.get("/api/next-question/<sid>")
 def next_question(sid):
     try:
-        # Ambil soal random dari semua KC (BKT Only)
-        q = get_random_question(None)   # None = semua KC
-        
+        q = get_random_question(None)  # Ambil dari semua KC
         if not q:
-            # Fallback soal
             q = {
                 "id": 999,
                 "kc_id": "KC-B01",
                 "type": "pilgan",
-                "q": "Berapa hasil dari 2 + 3?",
+                "q": "Berapa hasil 2 + 3?",
                 "options": ["4", "5", "6", "7"],
                 "answer": "5"
             }
-        
         return jsonify(q)
     except Exception as e:
         import traceback
-        print("=== NEXT QUESTION ERROR ===")
-        print(str(e))
+        print("Next Question Error:", str(e))
         print(traceback.format_exc())
-        return jsonify({"error": str(e)}), 500
+        return jsonify({"error": "Gagal memuat soal"}), 500
 
 @app.post("/api/answer/<sid>")
 def answer(sid):
     data = request.json
-    kc_id = data["kc_id"]
-    correct = bool(data["correct"])
+    kc_id = data.get("kc_id")
+    correct = bool(data.get("correct", False))
 
-    student = StudentModel(sid)
-    result = process_response(student, None, kc_id, correct)  # None = tanpa G
-    # sync to db
+    # Update state (sederhana)
+    upsert_kc_state(sid, kc_id, 0.6 if correct else 0.4, 
+                   1 if correct else 0, 0 if correct else 1, False)
+
     return jsonify({
         "correct": correct,
-        "p_know": round(result.get("p_after", 0), 3)
+        "message": "Benar!" if correct else "Salah"
     })
 
 if __name__ == "__main__":
