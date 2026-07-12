@@ -72,15 +72,42 @@ def get_topics(sid):
 
 @app.get("/api/next-question/<sid>")
 def next_question(sid):
-    # Rebuild student model
-    student = StudentModel(sid)
-    db_states = get_all_kc_states(sid)
-    # ... (rebuild logic)
-    next_kc = random.choice(KC_IDS)  # atau pakai select_next_kc tanpa ontologi
-    q = get_random_question(next_kc)
-    if not q:
-        q = {"q": "Soal tidak tersedia", "options": ["A","B","C","D"], "answer": "A"}
-    return jsonify(q)
+    try:
+        # Rebuild student model dari database
+        student = StudentModel(sid)
+        db_states = get_all_kc_states(sid)
+        
+        # Load state dari DB ke model
+        for kc_id, state in db_states.items():
+            if kc_id in student.kc_states:
+                student.kc_states[kc_id].p_know = state["p_know"]
+                student.kc_states[kc_id].n_correct = state["n_correct"]
+                student.kc_states[kc_id].n_incorrect = state["n_incorrect"]
+                student.kc_states[kc_id].is_mastered = bool(state["is_mastered"])
+
+        # Pilih KC (BKT Only = random atau select_next_kc tanpa graph)
+        next_kc = random.choice(KC_IDS) if KC_IDS else None
+        
+        if not next_kc:
+            return jsonify({"error": "Tidak ada KC tersedia"})
+
+        q = get_random_question(next_kc)
+        if not q:
+            q = {
+                "id": 999,
+                "kc_id": next_kc,
+                "type": "pilgan",
+                "q": "Soal contoh: Berapa 2 + 3?",
+                "options": ["4", "5", "6", "7"],
+                "answer": "5"
+            }
+        
+        return jsonify(q)
+    except Exception as e:
+        import traceback
+        print("Next Question Error:", str(e))
+        print(traceback.format_exc())
+        return jsonify({"error": str(e)}), 500
 
 @app.post("/api/answer/<sid>")
 def answer(sid):
