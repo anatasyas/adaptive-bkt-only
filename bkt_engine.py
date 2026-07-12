@@ -13,15 +13,6 @@ from dataclasses import dataclass, field
 from typing import Optional
 import networkx as nx
 
-from ontology import (
-    get_ontology_informed_prior,
-    get_ontology_informed_transit,
-    get_prerequisites,
-    get_available_kcs,
-    get_kc_info,
-    get_expected_learning_gain,
-)
-
 # ─── Default params (P(G) dan P(S) dari literatur) ────────────────────────────
 DEFAULT_BKT_PARAMS = {
     "p_transit":         0.10,
